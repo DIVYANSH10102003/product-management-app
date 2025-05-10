@@ -23,7 +23,7 @@ function App() {
     if (!code || !supplier || !productName) return alert('All fields are required');
 
     if (editId) {
-      const res = await axios.put(`http://localhost:5000/products/${editId}`, {
+      const res = await axios.put(`https://your-backend-url.onrender.com/products/${editId}`, {
         code,
         supplier,
         productName,
@@ -31,7 +31,7 @@ function App() {
       setProducts(products.map(p => (p._id === editId ? res.data : p)));
       setEditId(null);
     } else {
-      const res = await axios.post('http://localhost:5000/products', {
+      const res = await axios.post('https://your-backend-url.onrender.com/products', {
         code,
         supplier,
         productName,
@@ -45,7 +45,7 @@ function App() {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/products/${id}`);
+    await axios.delete(`https://your-backend-url.onrender.com/products/${id}`);
     setProducts(products.filter(p => p._id !== id));
   };
 

@@ -8,7 +8,7 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// Define Product model (you can also put this in a separate file if needed)
+// Define Product model
 const productSchema = new mongoose.Schema({
   code: {
     type: String,
@@ -28,7 +28,28 @@ const Product = mongoose.model('Product', productSchema);
 
 // Setup Express app
 const app = express();
-app.use(cors());
+
+// ✅ CORS configuration to allow only Vercel frontend
+const corsOptions = {
+  origin: 'https://product-management-app-inky.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type'],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
+
+// ✅ Handle preflight requests for all routes
+app.options('*', cors(corsOptions));
+
+// ✅ Debug CORS headers (optional but helpful)
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://product-management-app-inky.vercel.app');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+
 app.use(express.json());
 
 // Routes
