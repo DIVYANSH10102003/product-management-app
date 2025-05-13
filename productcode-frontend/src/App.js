@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import axios from 'axios';
 
 function App() {
@@ -10,7 +10,7 @@ function App() {
   const [search, setSearch] = useState('');
 
   const fetchProducts = async () => {
-    const res = await axios.get('https://your-backend-url.onrender.com/products');
+    const res = await axios.get('https://product-management-app-mi71.onrender.com/products');
     setProducts(res.data);
   };
 
@@ -23,7 +23,7 @@ function App() {
     if (!code || !supplier || !productName) return alert('All fields are required');
 
     if (editId) {
-      const res = await axios.put(`https://your-backend-url.onrender.com/products/${editId}`, {
+      const res = await axios.put(`https://product-management-app-mi71.onrender.com/products/${editId}`, {
         code,
         supplier,
         productName,
@@ -31,7 +31,7 @@ function App() {
       setProducts(products.map(p => (p._id === editId ? res.data : p)));
       setEditId(null);
     } else {
-      const res = await axios.post('https://your-backend-url.onrender.com/products', {
+      const res = await axios.post('https://product-management-app-mi71.onrender.com/products', {
         code,
         supplier,
         productName,
@@ -45,7 +45,7 @@ function App() {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`https://your-backend-url.onrender.com/products/${id}`);
+    await axios.delete(`https://product-management-app-mi71.onrender.com/products/${id}`);
     setProducts(products.filter(p => p._id !== id));
   };
 
