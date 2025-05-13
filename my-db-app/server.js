@@ -20,22 +20,34 @@ const Product = mongoose.model('Product', productSchema);
 // Setup Express app
 const app = express();
 
-// CORS configuration
-const allowedOrigin = 'https://product-management-app-inky.vercel.app';
+// Updated CORS configuration to allow multiple origins
+const allowedOrigins = [
+  'https://product-management-app-inky.vercel.app',
+  'https://product-management-84dw88gcx-divyanshs-projects-ddf7a79a.vercel.app'
+];
 
 const corsOptions = {
-  origin: allowedOrigin,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type'],
   credentials: true
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Handle preflight requests
+app.options('*', cors(corsOptions)); // Handle preflight
 
-// Optional: Debug CORS headers
+// Optional: Debug CORS headers (still keeping it)
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', allowedOrigin);
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   next();
