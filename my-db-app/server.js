@@ -6,22 +6,13 @@ require('dotenv').config();
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ MongoDB connected'))
-  .catch(err => console.error('❌ MongoDB connection error:', err));
+  .catch((err) => console.error('❌ MongoDB connection error:', err));
 
-// Define Product model
+// Define Product schema and model
 const productSchema = new mongoose.Schema({
-  code: {
-    type: String,
-    required: true,
-  },
-  supplier: {
-    type: String,
-    required: true,
-  },
-  productName: {
-    type: String,
-    required: true,
-  }
+  code: { type: String, required: true },
+  supplier: { type: String, required: true },
+  productName: { type: String, required: true }
 });
 
 const Product = mongoose.model('Product', productSchema);
@@ -29,22 +20,22 @@ const Product = mongoose.model('Product', productSchema);
 // Setup Express app
 const app = express();
 
-// ✅ CORS configuration to allow only Vercel frontend
+// CORS configuration
+const allowedOrigin = 'https://product-management-app-inky.vercel.app';
+
 const corsOptions = {
-  origin: 'https://product-management-app-inky.vercel.app',
+  origin: allowedOrigin,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type'],
   credentials: true
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight requests
 
-// ✅ Handle preflight requests for all routes
-app.options('*', cors(corsOptions));
-
-// ✅ Debug CORS headers (optional but helpful)
+// Optional: Debug CORS headers
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://product-management-app-inky.vercel.app');
+  res.header('Access-Control-Allow-Origin', allowedOrigin);
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   next();
@@ -53,20 +44,20 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 // Routes
-app.get('/', (req, res) => res.send('API is running 🚀'));
+app.get('/', (req, res) => {
+  res.send('API is running 🚀');
+});
 
-// Create a new product
 app.post('/products', async (req, res) => {
   try {
-    const newProduct = new Product(req.body);
-    const saved = await newProduct.save();
+    const product = new Product(req.body);
+    const saved = await product.save();
     res.status(201).json(saved);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
 
-// Get all products
 app.get('/products', async (req, res) => {
   try {
     const products = await Product.find();
@@ -76,7 +67,6 @@ app.get('/products', async (req, res) => {
   }
 });
 
-// Get a single product by ID
 app.get('/products/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -87,10 +77,12 @@ app.get('/products/:id', async (req, res) => {
   }
 });
 
-// Update a product by ID
 app.put('/products/:id', async (req, res) => {
   try {
-    const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    const updated = await Product.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    });
     if (!updated) return res.status(404).json({ error: 'Product not found' });
     res.json(updated);
   } catch (err) {
@@ -98,7 +90,6 @@ app.put('/products/:id', async (req, res) => {
   }
 });
 
-// Delete a product by ID
 app.delete('/products/:id', async (req, res) => {
   try {
     const deleted = await Product.findByIdAndDelete(req.params.id);
