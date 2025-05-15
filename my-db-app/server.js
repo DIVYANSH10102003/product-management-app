@@ -12,7 +12,8 @@ mongoose.connect(process.env.MONGO_URI)
 const productSchema = new mongoose.Schema({
   code: { type: String, required: true },
   supplier: { type: String, required: true },
-  productName: { type: String, required: true }
+  productName: { type: String, required: true },
+  price: { type: Number, required: false } // ✅ Added optional price field
 });
 
 const Product = mongoose.model('Product', productSchema);

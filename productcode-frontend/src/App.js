@@ -5,6 +5,7 @@ function App() {
   const [code, setCode] = useState('');
   const [supplier, setSupplier] = useState('');
   const [productName, setProductName] = useState('');
+  const [price, setPrice] = useState(''); // ✅ New state for optional price
   const [products, setProducts] = useState([]);
   const [editId, setEditId] = useState(null);
   const [search, setSearch] = useState('');
@@ -22,26 +23,27 @@ function App() {
     e.preventDefault();
     if (!code || !supplier || !productName) return alert('All fields are required');
 
+    const productData = {
+      code,
+      supplier,
+      productName,
+    };
+
+    if (price) productData.price = parseFloat(price); // ✅ Include price only if filled
+
     if (editId) {
-      const res = await axios.put(`https://product-management-app-mi71.onrender.com/products/${editId}`, {
-        code,
-        supplier,
-        productName,
-      });
+      const res = await axios.put(`https://product-management-app-mi71.onrender.com/products/${editId}`, productData);
       setProducts(products.map(p => (p._id === editId ? res.data : p)));
       setEditId(null);
     } else {
-      const res = await axios.post('https://product-management-app-mi71.onrender.com/products', {
-        code,
-        supplier,
-        productName,
-      });
+      const res = await axios.post('https://product-management-app-mi71.onrender.com/products', productData);
       setProducts([...products, res.data]);
     }
 
     setCode('');
     setSupplier('');
     setProductName('');
+    setPrice(''); // ✅ Reset price field
   };
 
   const handleDelete = async (id) => {
@@ -53,6 +55,7 @@ function App() {
     setCode(product.code);
     setSupplier(product.supplier);
     setProductName(product.productName);
+    setPrice(product.price || ''); // ✅ Pre-fill price if available
     setEditId(product._id);
   };
 
@@ -87,6 +90,13 @@ function App() {
           onChange={(e) => setProductName(e.target.value)}
           style={{ marginRight: '1rem' }}
         />
+        <input
+          type="number"
+          placeholder="Price (optional)"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          style={{ marginRight: '1rem' }}
+        />
         <button type="submit">{editId ? 'Update' : 'Save'}</button>
       </form>
 
@@ -105,6 +115,7 @@ function App() {
             <th>Code</th>
             <th>Supplier</th>
             <th>Product Name</th>
+            <th>Price</th> {/* ✅ New Price column */}
             <th>Actions</th>
           </tr>
         </thead>
@@ -114,6 +125,7 @@ function App() {
               <td>{p.code}</td>
               <td>{p.supplier}</td>
               <td>{p.productName}</td>
+              <td>{p.price !== undefined ? `₹${p.price}` : '-'}</td> {/* ✅ Show price or dash */}
               <td>
                 <button onClick={() => handleEdit(p)} style={{ marginRight: '0.5rem' }}>Edit</button>
                 <button onClick={() => handleDelete(p._id)}>Delete</button>
