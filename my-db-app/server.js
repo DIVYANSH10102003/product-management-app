@@ -25,7 +25,7 @@ const app = express();
 const allowedOrigins = [
   'https://product-management-app-inky.vercel.app',
   'https://product-management-84dw88gcx-divyanshs-projects-ddf7a79a.vercel.app',
-  'https://product-management-app-git-main-divyanshs-projects-ddf7a79a.vercel.app/'
+  'https://product-management-app-git-main-divyanshs-projects-ddf7a79a.vercel.app'
 ];
 
 const corsOptions = {
